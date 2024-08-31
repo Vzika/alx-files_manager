@@ -1,6 +1,10 @@
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
+/**
+ * Class representing the App Controller.
+ * @class
+ */
 export default class AppController {
   static getStatus(req, res) {
     res.status(200).send({ redis: redisClient.isAlive(), db: dbClient.isAlive() });
