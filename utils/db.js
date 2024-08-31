@@ -1,25 +1,30 @@
 import { MongoClient } from 'mongodb';
 
+const DB_HOST = process.env.DB_HOST || 'localhost';
+const DB_PORT = process.env.DB_PORT || 27017;
+const DB_DATABASE = process.env.DB_DATABASE || 'files_manager';
+
 class DBClient {
   constructor() {
-    this.host = process.env.DB_HOST || 'localhost';
-    this.port = process.env.DB_PORT || 27017;
-    this.database = process.env.DB_DATABASE || 'files_manager';
-
     // Connect to MongoDB
-    const url = `mongodb://${this.host}:${this.port}`;
-    MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
-      if (!err) {
-        this.db = client.db(this.database);
-      } else {
-        console.error(`Error connecting to MongoDB: ${err}`);
-      }
+    const url = `mongodb://${DB_HOST}:${DB_PORT}`;
+    this.client = new MongoClient(url, {
+      useNewUrlTopology: true,
     });
+    this.client
+      .connect()
+      .then(() => {
+        this.db = this.client.db(DB_DATABASE);
+      })
+      .catch((err) => {
+        console.error(`Error connecting to MongoDB: ${err}`);
+      });
   }
 
   // Check if the connection to MongoDB is established
   isAlive() {
-    return !!this.db;
+    // return !!this.db; // Not too understandable
+    return this.client.isConnected();
   }
 
   // Fetch a user from the collection users
