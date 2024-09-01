@@ -229,7 +229,6 @@ export default class FilesController {
     const fileId = req.params.id;
     const file = await dbClient.getFileBy({ _id: ObjectId(fileId) });
     if (!file) {
-      console.log('I got here');
       res.status(404).send({ error: 'Not found' });
       return;
     }
