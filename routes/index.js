@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.use(express.json());
 
+// Status and Stats routes
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
 
