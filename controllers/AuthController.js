@@ -31,7 +31,7 @@ export default class AuthController {
   // sign-out a user based on a token
   static async getDisconnect(req, res) {
     // Obtain the Authorization token from the header
-    const token = req.headers('x-token');
+    const token = req.headers['x-token'];
     if (!token) return res.status(401).send({ error: 'Unauthorized' });
     const userId = await getUserByToken(req);
     if (!userId) return res.status(401).send({ error: 'Unauthorized' });
