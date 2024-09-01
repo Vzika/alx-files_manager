@@ -31,19 +31,13 @@ export default class UsersController {
   static async getMe(req, res) {
     // Authenticate user by token
     const userId = await getUserByToken(req);
-    if (!userId) {
-      res.status(401).send({ error: 'Unauthorized' });
-      return;
-    }
+    if (!userId) return res.status(401).send({ error: 'Unauthorized' });
 
     // Fetch the user from the database
     const user = await dbClient.getUserBy({ _id: userId });
-    if (!user) {
-      res.status(401).send({ error: 'Unauthorized' });
-      return;
-    }
+    if (!user) return res.status(401).send({ error: 'Unauthorized' });
 
     // Return the user information in a JSON response
-    res.status(200).send({ id: user._id, email: user.email });
+    return res.status(200).send({ id: user._id, email: user.email });
   }
 }
