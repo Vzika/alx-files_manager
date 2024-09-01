@@ -232,29 +232,21 @@ export default class FilesController {
       res.status(404).send({ error: 'Not found' });
       return;
     }
+    // Get userId, isPublic attributes
+    const { userId, isPublic } = file;
 
     // Obtain the user ID by the token
     const authUserId = await getUserByToken(req);
-    // Get userId and isPublic attributes
-    const { userId, isPublic } = file;
 
-    if (!isPublic && !authUserId) {
-      res.status(403).send({ error: 'Not found' });
+    if (!isPublic && (!authUserId || authUserId.toString() !== userId.toString())) {
+      res.status(404).send({ error: 'Not found' });
       return;
     }
-    // Consider when the file is not public and the user is not the owner
-    if (!isPublic && authUserId.toString() !== userId.toString()) {
-      res.status(403).send({ error: 'Not found' });
-      return;
-    }
-
     // Check if the file is not a folder
     if (file.type === 'folder') {
       res.status(400).send({ error: "A folder doesn't have content" });
       return;
     }
-
-    // Get the file path
     let { localPath } = file;
     // Check if the file is an image
     if (file.type === 'image') {
@@ -271,7 +263,7 @@ export default class FilesController {
     }
 
     // Get the MIME-type of the file
-    const mimeType = mime.lookup(file.name);
+    const mimeType = mime.lookup(file.name) || 'application/octet-stream';
 
     // Set the 'Content-Type' header to the MIME type of the file
     res.set('Content-Type', mimeType);
