@@ -1,6 +1,5 @@
 import { createHash } from 'crypto';
 import Queue from 'bull';
-
 import dbClient from '../utils/db';
 import getUserByToken from '../utils/getUser';
 
@@ -16,10 +15,10 @@ export default class UsersController {
       if (user) return res.status(400).send({ error: 'Already exist' });
 
       const hashedPassword = createHash('sha1').update(password).digest('hex');
-      const result = await dbClient.db.collection('users').insertOne({ email, password: hashedPassword });
-      // Add a userQueue job
+      const result = await dbClient.db
+        .collection('users')
+        .insertOne({ email, password: hashedPassword });
       userQueue.add({ userId: result.insertedId });
-
       return res.status(201).send({ id: result.insertedId, email });
     } catch (error) {
       console.error('Error creating user:', error);
@@ -27,23 +26,17 @@ export default class UsersController {
     }
   }
 
-  // Retrieve the user based on the token
   static async getMe(req, res) {
-    // Authenticate user by token
     const userId = await getUserByToken(req);
     if (!userId) {
       res.status(401).send({ error: 'Unauthorized' });
       return;
     }
-
-    // Fetch the user from the database
     const user = await dbClient.getUserBy({ _id: userId });
     if (!user) {
       res.status(401).send({ error: 'Unauthorized' });
       return;
     }
-
-    // Return the user information in a JSON response
     res.status(200).send({ id: user._id, email: user.email });
   }
 }
