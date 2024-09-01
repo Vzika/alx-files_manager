@@ -263,7 +263,7 @@ export default class FilesController {
     }
 
     // Get the MIME-type of the file
-    const mimeType = mime.lookup(file.name) || 'application/octet-stream';
+    const mimeType = mime.lookup(file.name) || 'application/octet-stream'; // 'or text/plain; charset=utf-8'
 
     // Set the 'Content-Type' header to the MIME type of the file
     res.set('Content-Type', mimeType);
